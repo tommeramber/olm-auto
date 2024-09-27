@@ -7,14 +7,31 @@
     state: absent
     path: "{{ regsfile  }}"
 
+# tasks file for cleanup
+- name: Delete {{ destfile  }} dir
+  file:
+    state: absent
+    path: "{{ destfile  }}"
 
-- name: Delete {{ regone }} and {{ regtwo }} container
+- name: Delete {{ extfile }} dir
+  file:
+    state: absent
+    path: "{{ extfile }}/{{ item }}"
+  loop:
+    - oc
+    - opm
+    - kubectl
+    - grpcurl
+    - README.md
+    - LICENSE
+    - packages.out
+
+- name: Delete {{ regone }} container
   containers.podman.podman_container:
     name: "{{ item }}"
     state: absent
   loop:
     - "{{ regone }}"
-    - "{{ regtwo }}"
 
 - name: Delete the index images
   containers.podman.podman_image:
@@ -23,4 +40,7 @@
     force: yes
   loop:
     - "{{ regone }}"
-    - "{{ regtwo }}"
+
+- name: Delete container 50051
+  shell: sudo podman ps | grep {{ rhindex }}/redhat/{{ rhuserindex.user_input }} | sudo podman rm -f $(awk '{print  $1}') 
+  become: true

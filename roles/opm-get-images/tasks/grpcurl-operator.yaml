@@ -1,0 +1,49 @@
+---
+
+- name: rhuserindex   
+  pause: 
+    prompt: Choose one of the following- redhat-operator-index /certified-operator-index /redhat-marketplace-index / community-operator-index
+  register: rhuserindex
+
+
+- name: run opm index on podman 
+  shell: podman run -p50051:50051 -d -it registry.redhat.io/redhat/{{ rhuserindex.user_input }}:{{ ocpver }}
+
+- name: grep the index --> operators names to packages.out file
+  shell: grpcurl -plaintext localhost:50051 api.Registry/ListPackages >{{ extfile }}/packages.out
+
+
+
+- name: remove \" from file
+  shell: sed 's/"//g' {{ extfile }}/packages.out
+  become: true 
+
+- name: show packages output
+  shell: less {{ extfile }}/packages.out
+  register: packages
+
+
+- debug:
+    msg: "{{ packages.stdout_lines }}"
+
+- name: useroperator   
+  pause: 
+    prompt: enter a SINGLE OPERATOR please
+  register: useroperator
+
+
+- debug:
+    var: useroperator.user_input
+
+
+- name: get the exact name of the single operator
+  shell: "grep {{ packages.stdout_lines }} {{ extfile }}/packages.out | awk '{print $2}' | sed 's/\"//g' "
+  register: grepname_out
+
+
+- name: register the name of the operator
+  debug:
+   var: grepname_out.stdout
+
+
+

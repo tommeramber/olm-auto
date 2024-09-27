@@ -74,7 +74,36 @@
 
 - name: copy opm oc kubectl grpcurl to /usr/local/bin
   copy:
-    src: "{{ extfile }}/"
+    src: "{{ extfile }}/{{ item  }}"
     dest: /usr/local/bin
+    mode: 0777
   become: yes
+  with_items:
+    - opm
+    - oc
+    - kubectl
+    - grpcurl
 
+- name: copy opm oc kubectl grpcurl to /usr/local/sbin
+  copy:
+    src: "{{ extfile }}/{{ item  }}"
+    dest: /usr/local/sbin
+    mode: 0777
+  become: yes
+  with_items:
+    - opm
+    - oc
+    - kubectl
+    - grpcurl
+
+- name: copy grpcurl to /usr/bin
+  copy:
+    src: "{{ extfile }}/{{ item }}"
+    dest: /usr/bin
+    mode: 0777
+  become: yes
+  with_items:
+    - opm
+    - grpcurl
+    - oc
+    - kubectl

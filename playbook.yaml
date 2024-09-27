@@ -1,22 +1,18 @@
 ---
 - hosts: localhost
   vars:
-    index_image: # Choose one of the following: redhat-operator/certified-operator/community-operator
-    required_operator: # Operators exsact names: name1,name2,name3...
-    destfile: "{{  playbook_dir  }}/files"
-    extfile: "{{ playbook_dir }}/extfiles"
+    destfile: "{{  playbook_dir  }}/files" 
+    extfile: "{{ playbook_dir }}/extfiles" # This folder contains all the files that will be needed at the restricted network
     scrptfile: "{{ playbook_dir }}/scripts" 
     regsfile:  "{{ playbook_dir }}/regs"
-    regone: "registryone"
-    regtwo: "registrytwo"
-    imagelist: "kiali-ossm"
-    ocpver:  "v4.8"
+    regone: "localregistry"
+    ocpver:  "v4.9"
     rhindex: "registry.redhat.io" 
   
   tasks:
   - block:
     - include_role:
-        name: prerequisites
+         name: prerequisites
     - include_role:
          name: deploy-local-registry
     - include_role:
